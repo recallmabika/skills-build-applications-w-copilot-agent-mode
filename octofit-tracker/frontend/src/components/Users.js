@@ -1,80 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Users() {
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
-  const codespaceName = process.env.REACT_APP_CODESPACE_NAME;
-  const apiHost = codespaceName
-    ? `https://${codespaceName}-8000.app.github.dev`
-    : 'http://localhost:8000';
-  const endpoint = `${apiHost}/api/users/`;
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('Users endpoint:', endpoint);
-    fetch(endpoint)
-      .then((response) => {
-        console.log('Users response status:', response.status);
-        return response.json();
-      })
+    fetch('https://redesigned-space-xylophone-pjxg4r47qrp6f6jpg-8000.app.github.dev/api/users/')
+      .then((res) => res.json())
       .then((data) => {
-        console.log('Users fetched data:', data);
-        if (Array.isArray(data)) {
-          setItems(data);
-          return;
-        }
-        const results = data?.results ?? data?.data;
-        if (Array.isArray(results)) {
-          setItems(results);
-          return;
-        }
-        if (data) {
-          setItems([data]);
-          return;
-        }
-        setItems([]);
+        setUsers(data);
+        setLoading(false);
       })
-      .catch((fetchError) => {
-        console.error('Users fetch error:', fetchError);
-        setError('Unable to load users.');
+      .catch((err) => {
+        console.error('Error fetching users:', err);
+        setLoading(false);
       });
-  }, [endpoint]);
+  }, []);
 
-  const headers = items.length > 0 ? Object.keys(items[0]) : [];
+  if (loading) return <p>Loading users...</p>;
 
   return (
-    <div>
-      <h2 className="mb-4">Users</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      {items.length === 0 && !error ? (
-        <p className="text-muted">No users found.</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead className="table-dark">
-              <tr>
-                {headers.map((header) => (
-                  <th key={header} scope="col">
-                    {header.charAt(0).toUpperCase() + header.slice(1)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, index) => (
-                <tr key={item.id ?? index}>
-                  {headers.map((header) => (
-                    <td key={header}>
-                      {typeof item[header] === 'object'
-                        ? JSON.stringify(item[header])
-                        : String(item[header])}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+    <div className="container mt-4">
+      <h2>Users</h2>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u, i) => (
+            <tr key={i}>
+              <td>{u.username}</td>
+              <td>{u.email}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

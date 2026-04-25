@@ -1,80 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Activities() {
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
-  const codespaceName = process.env.REACT_APP_CODESPACE_NAME;
-  const apiHost = codespaceName
-    ? `https://${codespaceName}-8000.app.github.dev`
-    : 'http://localhost:8000';
-  const endpoint = `${apiHost}/api/activities/`;
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('Activities endpoint:', endpoint);
-    fetch(endpoint)
-      .then((response) => {
-        console.log('Activities response status:', response.status);
-        return response.json();
-      })
+    fetch('https://redesigned-space-xylophone-pjxg4r47qrp6f6jpg-8000.app.github.dev/api/activities/')
+      .then((res) => res.json())
       .then((data) => {
-        console.log('Activities fetched data:', data);
-        if (Array.isArray(data)) {
-          setItems(data);
-          return;
-        }
-        const results = data?.results ?? data?.data;
-        if (Array.isArray(results)) {
-          setItems(results);
-          return;
-        }
-        if (data) {
-          setItems([data]);
-          return;
-        }
-        setItems([]);
+        setActivities(data);
+        setLoading(false);
       })
-      .catch((fetchError) => {
-        console.error('Activities fetch error:', fetchError);
-        setError('Unable to load activities.');
+      .catch((err) => {
+        console.error('Error fetching activities:', err);
+        setLoading(false);
       });
-  }, [endpoint]);
+  }, []);
 
-  const headers = items.length > 0 ? Object.keys(items[0]) : [];
+  if (loading) return <p>Loading activities...</p>;
 
   return (
-    <div>
-      <h2 className="mb-4">Activities</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      {items.length === 0 && !error ? (
-        <p className="text-muted">No activities found.</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead className="table-dark">
-              <tr>
-                {headers.map((header) => (
-                  <th key={header} scope="col">
-                    {header.charAt(0).toUpperCase() + header.slice(1)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, index) => (
-                <tr key={item.id ?? index}>
-                  {headers.map((header) => (
-                    <td key={header}>
-                      {typeof item[header] === 'object'
-                        ? JSON.stringify(item[header])
-                        : String(item[header])}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+    <div className="container mt-4">
+      <h2>Activities</h2>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Activity Type</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activities.map((a, i) => (
+            <tr key={i}>
+              <td>{a.user}</td>
+              <td>{a.activity_type}</td>
+              <td>{a.duration}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
