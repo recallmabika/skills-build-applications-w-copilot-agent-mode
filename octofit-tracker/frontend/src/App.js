@@ -22,9 +22,7 @@ function Home() {
   );
 }
 
-function App({ apiHost }) {
-  console.log('App API host:', apiHost);
-
+function App() {
   const navClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`;
 
   return (
@@ -79,11 +77,11 @@ function App({ apiHost }) {
           <div className="card-body">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/activities" element={<Activities apiHost={apiHost} />} />
-              <Route path="/teams" element={<Teams apiHost={apiHost} />} />
-              <Route path="/workouts" element={<Workouts apiHost={apiHost} />} />
-              <Route path="/users" element={<Users apiHost={apiHost} />} />
-              <Route path="/leaderboard" element={<Leaderboard apiHost={apiHost} />} />
+              <Route path="/activities" element={<Activities />} />
+              <Route path="/teams" element={<Teams />} />
+              <Route path="/workouts" element={<Workouts />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
             </Routes>
           </div>
         </div>

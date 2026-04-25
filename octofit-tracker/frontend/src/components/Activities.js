@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-function Activities({ apiHost }) {
+function Activities() {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
+  const codespaceName = process.env.REACT_APP_CODESPACE_NAME;
+  const apiHost = codespaceName
+    ? `https://${codespaceName}-8000.app.github.dev`
+    : 'http://localhost:8000';
   const endpoint = `${apiHost}/api/activities/`;
 
   useEffect(() => {
