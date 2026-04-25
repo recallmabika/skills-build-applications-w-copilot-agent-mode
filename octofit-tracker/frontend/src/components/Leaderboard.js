@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 function Leaderboard({ apiHost }) {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
-  const endpoint = `${apiHost}/api/leaderboard/`;
+  const endpoint = `${apiHost}/api/leaderboards/`;
 
   useEffect(() => {
     console.log('Leaderboard endpoint:', endpoint);
